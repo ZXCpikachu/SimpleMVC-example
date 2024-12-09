@@ -5,9 +5,9 @@
 $config = [
     'core' => [ // подмассив, используемый самим ядром фреймворка
         'db' => [
-            'dns' => 'mysql:host=localhost;dbname=dbname',
-            'username' => 'root',
-            'password' => '1234'
+            'dns' => 'mysql:host=localhost;dbname=db_cms',
+            'username' => 'myuser',
+            'password' => '12345'
         ],
         'router' => [ // подсистема маршрутизации
             'class' => \ItForFree\SimpleMVC\Router\ConsoleRouter::class,
