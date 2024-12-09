@@ -23,7 +23,7 @@
             
     <?php foreach ( $results['articles'] as $article ) { ?>
 
-            <tr onclick="location='<?=\ItForFree\SimpleMVC\Url::link('CMSAdmin/editArticle')?>&amp;articleId = <?php echo $article->id ?>'">
+            <tr onclick="location='<?=\ItForFree\SimpleMVC\Url::link('Admin/editArticle')?>&amp;articleId = <?php echo $article->id ?>'">
               <td><?php echo date('j M Y', $article->publicationDate)?></td>
               <td>
                 <?php echo $article->title?>
@@ -83,6 +83,6 @@
 
           <p><?php echo $results['totalRows']?> article<?php echo ( $results['totalRows'] != 1 ) ? 's' : '' ?> in total.</p>
 
-          <p><a href="<?= \ItForFree\SimpleMVC\Url::link('CMSAdmin/newArticle') ?>">Add a New Article</a></p>
+          <p><a href="<?= \ItForFree\SimpleMVC\Url::link('Admin/newArticle') ?>">Add a New Article</a></p>
 
          

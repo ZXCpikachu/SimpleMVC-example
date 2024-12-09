@@ -1,5 +1,5 @@
 	  
-<form action="<?= \ItForFree\SimpleMVC\Url::link('CMSLogin/login')?>" method="post" style="width: 50%;">
+<form action="<?= \ItForFree\SimpleMVC\Url::link('Login/login')?>" method="post" style="width: 50%;">
         <input type="hidden" name="login" value="true" />
 
         <?php if ( isset( $results['errorMessage'] ) ) { ?>

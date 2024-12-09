@@ -6,7 +6,7 @@
 
 	<?php if ($results['article']['subcategory']) { ?>
 		in subcategory
-		<a href="<?= \ItForFree\SimpleMVC\Url::link('CMSHomepage/archiveSubcat')?>&amp;subcategoryId=<?php echo $article->subcategoryId?>">
+		<a href="<?= \ItForFree\SimpleMVC\Url::link('Homepage/archiveSubcat')?>&amp;subcategoryId=<?php echo $article->subcategoryId?>">
 			<?php echo htmlspecialchars($results['article']['subcategory']->name) ?>
 		</a>
 	<?php } ?> 

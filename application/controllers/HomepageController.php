@@ -24,9 +24,9 @@ class HomepageController extends \ItForFree\SimpleMVC\MVC\Controller
      * Инициализация всех сущностей
      */
     protected function initModelObjects(){
-        $this->Article = new Article;
-        $this->Category = new Category;
-        $this->Subcategory = new Subcategory;
+        $this->Article = new Article();
+        $this->Category = new Category();
+        $this->Subcategory = new Subcategory();
         $this->Connection = new Connection();
         $this->Users = new AllUsers();
     }

@@ -16,7 +16,7 @@
 
         <?php foreach ( $results['categories'] as $category ) { ?>
 
-                <tr onclick="location='<?= \ItForFree\SimpleMVC\Url::link('CMSAdmin/editCategory') ?>&amp;categoryId= =<?php echo $category->id?>'">
+                <tr onclick="location='<?= \ItForFree\SimpleMVC\Url::link('Admin/editCategory') ?>&amp;categoryId= =<?php echo $category->id?>'">
                     <td>
                         <?php echo $category->name?>
                     </td>
@@ -28,6 +28,6 @@
 
             <p><?php echo $results['totalRows']?> category<?php echo ( $results['totalRows'] != 1 ) ? 'ies' : 'y' ?> in total.</p>
 
-            <p><a href="<?= \ItForFree\SimpleMVC\Url::link('CMSAdmin/newCategory')?>">Add a New Category</a></p>
+            <p><a href="<?= \ItForFree\SimpleMVC\Url::link('Admin/newCategory')?>">Add a New Category</a></p>
 	  
 	<?php include "templates/include/footer.php" ?>

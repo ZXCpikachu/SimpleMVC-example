@@ -12,14 +12,14 @@ class LoginController extends \ItForFree\SimpleMVC\MVC\Controller
     public function loginAction() {
         $User = Config::getObject('core.user.class');
         if ($User->userName != null && $User->userName != 'guest'){
-            $this->redirect(Url::link("CMSAdmin/index"));
+            $this->redirect(Url::link("Admin/index"));
         }elseif (!empty($_POST)) {
             $login = $_POST['userName'];
             $pass = $_POST['password'];
             if($User->login($login, $pass)) {
-                $this->redirect(Url::link("CMSAdmin/index"));
+                $this->redirect(Url::link("Admin/index"));
             } else {
-                $this->redirect(Url::link("CMSLogin/login&auth=deny"));
+                $this->redirect(Url::link("Login/login&auth=deny"));
             }
         }
         else {
@@ -32,7 +32,7 @@ class LoginController extends \ItForFree\SimpleMVC\MVC\Controller
     {
         $User = Config::getObject('core.user.class');
         $User->logout();
-        $this->redirect(Url::link("CMSLogin/login"));
+        $this->redirect(Url::link("Login/login"));
     }
     
 }

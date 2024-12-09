@@ -13,27 +13,34 @@ class Subcategory extends \ItForFree\SimpleMVC\MVC\Model
     public function storeFormValues($params){
 		$this->__construct( $params );
 	}
-    public function getList($numRows=1000000, $categoryId=null, $order="name ASC") : array
-	{
-		$categoryClause = $categoryId ? "WHERE cat_id = $categoryId" : "";
-		
-		  $sql = "SELECT * FROM $this->tableName $categoryClause ORDER BY $order LIMIT :numRows";
-		
-		$st= $this->pdo->prepare($sql);
-		$st->bindValue(":numRows", $numRows, \PDO::PARAM_INT );
-		$st->execute();
-		$list = array();
-		
-		while( $row = $st->fetch() ){
-			$subcategory = new Subcategory($row);
-			$list[] = $subcategory;
-		}
-		
-		$sql = "SELECT FOUND_ROWS() AS totalRows";
-		$totalRows = $this->pdo->query($sql)->fetch();
-		$conn = null;
-		return (array("results" => $list, "totalRows" => $totalRows[0] ) );
-	}
+        public function getList($numRows = 1000000, $categoryId = null, $order = "name ASC") : array
+    {
+        $categoryClause = $categoryId !== null ? "WHERE cat_id = :categoryId" : "";
+        $sql = "SELECT * FROM $this->tableName $categoryClause ORDER BY $order LIMIT :numRows";
+        $st = $this->pdo->prepare($sql);
+        $st->bindValue(":numRows", $numRows, \PDO::PARAM_INT);
+        if ($categoryId !== null) {
+            $st->bindValue(":categoryId", $categoryId, \PDO::PARAM_INT);
+        }
+        $st->execute();
+        $list = [];
+        while ($row = $st->fetch()) {
+            $subcategory = new Subcategory($row);
+            $list[] = $subcategory;
+        }
+        $totalRowsSql = "SELECT COUNT(*) AS totalRows FROM $this->tableName $categoryClause";
+        $totalRowsSt = $this->pdo->prepare($totalRowsSql);
+        if ($categoryId !== null) {
+            $totalRowsSt->bindValue(":categoryId", $categoryId, \PDO::PARAM_INT);
+        }
+        $totalRowsSt->execute();
+        $totalRows = $totalRowsSt->fetch();
+        return [
+            "results" => $list,
+            "totalRows" => $totalRows['totalRows']
+        ];
+    }
+
     public function getCategIdByName($name){
         $sql = "SELECT id FROM categories WHERE name = :name ";
         $st = $this->pdo->prepare($sql);

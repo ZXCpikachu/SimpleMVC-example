@@ -17,7 +17,6 @@ class Category extends \ItForFree\SimpleMVC\MVC\Model
          $this->__construct( $params );
     }
     public function getList($numRows=100000,$order="name ASC"):array {
-    
         $sql = "SELECT * FROM categories ORDER BY $order LIMIT :numRows";
         $st = $this->pdo->prepare($sql);
         $st->bindValue(":numRows", $numRows, \PDO::PARAM_INT);
@@ -29,7 +28,6 @@ class Category extends \ItForFree\SimpleMVC\MVC\Model
         }
         $sql = "SELECT FOUND_ROWS() AS totalRows";
         $totalRows = $this->pdo->query($sql)->fetch();
-        $conn =null;
         return (array("results" => $list, "totalRows" => $totalRows[0]));
     }
     public function insert($tableName = ''){

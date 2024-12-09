@@ -30,7 +30,7 @@
       </form>
 
     <?php if ( $results['category']->id ) { ?>
-    <p><a href="<?= \ItForFree\SimpleMVC\Url::link('CMSAdmin/deleteCategory')?>&amp;categoryId=<?php echo $results['category']->id ?>" onclick="return confirm('Delete This Category?')">
+    <p><a href="<?= \ItForFree\SimpleMVC\Url::link('Admin/deleteCategory')?>&amp;categoryId=<?php echo $results['category']->id ?>" onclick="return confirm('Delete This Category?')">
             Delete This Category
         </a>
     </p>
