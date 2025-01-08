@@ -38,7 +38,16 @@ $config = [
             'class' => ItForFree\SimpleMVC\Session::class,
             'alias' => '@session'
         ],
-        'homepageNumArticles' => 5
+        'subcategory' => [ // подсистема работы с сессиями
+            'class' => \application\models\Subcategory::class
+        ],
+        
+        'homepageNumArticles' => 5,
+        'homepageNumSubcategories' => 5,
+        'homepageNumArticlesPerSubcategory' =>5,
+        'admin' => [
+            'username' => 'admin', // Укажите имя пользователя администратора
+        ]
     ]    
 ];
 

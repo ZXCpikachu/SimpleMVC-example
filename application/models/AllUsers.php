@@ -104,6 +104,29 @@ public ?int $id = null;
 //            $st->bindValue(":id", $this->$id,PDO::PARAM_INT);
 //            $st->execute();
         }
+        public function getAuthData($login): ?array {
+        $sql = "SELECT pass FROM users WHERE login = :login";
+        $st = $this->pdo->prepare($sql);
+        $st->bindValue(":login", $login, \PDO::PARAM_STR);
+        $st->execute();
+        return $st->fetch(); // Возвращаем только данные для пароля
+    }
+
+        public function checkAuthData($login, $password): bool {
+        $sql = "SELECT pass FROM users WHERE login = :login";
+        $st = $this->pdo->prepare($sql);
+        $st->bindValue(":login", $login, \PDO::PARAM_STR);
+        $st->execute();
+        $authData = $st->fetch();
+
+        // Проверяем, совпадает ли пароль
+        if ($authData && password_verify($password, $authData['pass'])) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     
     
     

@@ -4,7 +4,6 @@
 	<div class="errorMessage"><?php echo $results['errorMessage'] ?></div>
 <?php } ?>
 
-
 <?php if (isset($results['statusMessage'])) { ?>
 	<div class="statusMessage"><?php echo $results['statusMessage'] ?></div>
 <?php } ?>
@@ -17,7 +16,7 @@
 
 	<?php foreach ($results['subcategories'] as $subcategory) { ?>
 
-		<tr onclick="location = '<?= \ItForFree\SimpleMVC\Url::link('Admin/editSubcategory')?>&amp;subcategoryId=<?php echo $subcategory->id ?>'">
+		<tr onclick="location = '<?= \ItForFree\SimpleMVC\Router\WebRouter::link('Admin/editSubcategory')?>&amp;subcategoryId=<?php echo $subcategory->id ?>'">
 			<td>
 				<?php echo $subcategory->name ?>
 			</td>
@@ -32,4 +31,4 @@
 
 <p><?php echo $results['totalRows'] ?> categor<?php echo ( $results['totalRows'] != 1 ) ? 'ies' : 'y' ?> in total.</p>
 
-<p><a href="<?= \ItForFree\SimpleMVC\Url::link('Admin/newSubcategory')?>">Add a New Subcategory</a></p>
+<p><a href="<?= \ItForFree\SimpleMVC\Router\WebRouter::link('Admin/newSubcategory')?>">Add a New Subcategory</a></p>

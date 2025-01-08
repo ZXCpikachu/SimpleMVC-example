@@ -16,6 +16,25 @@ class Category extends \ItForFree\SimpleMVC\MVC\Model
     public function storeFormValues ($param){
          $this->__construct( $params );
     }
+   public function getById(int $id, string $tableName = ''): ?Model
+    {  
+        $tableName = !empty($tableName) ? $tableName : $this->tableName;
+        
+        $sql = "SELECT * FROM $tableName where id = :id";      
+        $modelClassName = static::class;
+        
+        $st = $this->pdo->prepare($sql); 
+        
+        $st->bindValue(":id", $id, \PDO::PARAM_INT);
+        $st->execute();
+        $row = $st->fetch();
+        
+        if ($row) { 
+            return new $modelClassName( $row );
+        } else {
+            return null;
+        }
+    }
     public function getList($numRows=100000,$order="name ASC"):array {
         $sql = "SELECT * FROM categories ORDER BY $order LIMIT :numRows";
         $st = $this->pdo->prepare($sql);
@@ -28,7 +47,10 @@ class Category extends \ItForFree\SimpleMVC\MVC\Model
         }
         $sql = "SELECT FOUND_ROWS() AS totalRows";
         $totalRows = $this->pdo->query($sql)->fetch();
-        return (array("results" => $list, "totalRows" => $totalRows[0]));
+        return [
+            "results" => $list,
+            "totalRows" => $totalRows['totalRows']
+        ];
     }
     public function insert($tableName = ''){
         $tableName = !empty($tableName) ? $tableName : $this->tableName;
