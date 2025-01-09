@@ -29,7 +29,7 @@ class AdminController extends \ItForFree\SimpleMVC\MVC\Controller
         $this->results['subcategories'] = array();
         foreach($this->results['subcategories'] as $subcategory){
             $this->results['subcategories'][$subcategory->id] = $subcategory;
-            $this->results['categories'] [$subcategory->id] = $this->Category->getById($subcategory->cat_id);
+            $this->results['categories'] [$subcategory->id] = $this->Category->getById($subcategory->categoryId);
         }
     }
     public function indexAction(){
@@ -91,7 +91,7 @@ class AdminController extends \ItForFree\SimpleMVC\MVC\Controller
         $this->title = $this->results['pageTitle'];
         $this->view->addVar('title',$this->title);
         foreach ($this->results['subcategories'] as $subcategory) {
-			$category = $this->Category->getById($subcategory->cat_id);
+			$category = $this->Category->getById($subcategory->categoryId);
 			$subcategory->cat_name = $category->name;
 		}
         if (isset($_GET['error'])){

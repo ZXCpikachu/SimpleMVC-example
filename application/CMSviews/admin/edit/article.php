@@ -72,8 +72,8 @@
 </form>
 
 <?php if ($results['article']->id) { ?>
-<p><a href="<?= \ItForFree\SimpleMVC\Url::link('Admin/deleteArticle')?>&amp;articleId=<?php echo $results['article']->id ?>" onclick="return confirm('Delete This Article?')">
-			Delete This Article
-		</a>
+    <p><a href="<?= \ItForFree\SimpleMVC\Router\WebRouter::link('Admin/deleteArticle') ?>&amp;articleId=<?php echo $results['article']->id ?>" onclick="return confirm('Delete This Article?')">
+            Delete This Article
+        </a>
     </p>
 <?php } ?>

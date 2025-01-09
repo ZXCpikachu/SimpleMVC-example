@@ -12,6 +12,7 @@ class HomepageController extends \ItForFree\SimpleMVC\MVC\Controller
     public string $layoutPath = 'main.php';
     public $title = 'CMS на PHP';
     public $articlesData = array();
+    public $subcategoriesData = array();
     public $results = array();
     public $Article = null;
     public $Category = null;
@@ -30,18 +31,35 @@ class HomepageController extends \ItForFree\SimpleMVC\MVC\Controller
         $this->Connection = new Connection();
         $this->Users = new AllUsers();
     }
-    protected  function getArticles()
-    {
-        $this->results['articles'] = $this->articlesData['results'];
-        $this->results['totalRows'] = $this->articlesData['totalRows'];
-        $this->articlesData = $this->Subcategory->getList();
-        $this->results['subcategories'] = array();
-        foreach ( $this->articlesData['results'] as $subcategory ) { 
-			$this->results['subcategories'][$subcategory->id] = $subcategory;
-			$this->results['categories'][$subcategory->id] = $this->Category->
-					getById($subcategory->cat_id);
-		}
+    public function getArticles() {
+    $this->initModelObjects();
+    $this->articlesData = $this->Article->getList(Config::get('core.homepageNumArticles'));
+
+    $this->results['articles'] = $this->articlesData['results'];
+    $this->results['totalRows'] = $this->articlesData['totalRows'];
+
+    $subcategoriesData = $this->Subcategory->getList();
+    $categoriesData = $this->Category->getList();
+
+    $this->results['subcategories'] = array();
+    $this->results['categories'] = array();
+    
+
+    foreach ($categoriesData['results'] as $category) {
+        $this->results['categories'][$category->id] = $category;  
     }
+
+
+    // Проходим по подкатегориям и получаем данные
+    foreach ($subcategoriesData['results'] as $subcategory) {
+        $this->results['subcategories'][$subcategory->id] = $subcategory;
+    }
+}
+
+
+
+
+
     public function indexAction()
     {
         $this->initModelObjects();
@@ -49,7 +67,7 @@ class HomepageController extends \ItForFree\SimpleMVC\MVC\Controller
         $this->getArticles();
         foreach ($this->results['articles'] as $article)
         {
-            $article->content = substr($article->content,0,100) . ' ...';
+            $article->content = substr($article->content,0,50) . ' ...';
         }
         $this->view->addVar('title',$this->title);
         $this->view->addVar('results', $this->results);
@@ -58,20 +76,24 @@ class HomepageController extends \ItForFree\SimpleMVC\MVC\Controller
     
     public function viewArticleAction(){
         $this->initModelObjects();
-        $this->articlesData['id'] = $_GET['articleId'];
+        if (!isset($_GET['articleId']) || !is_numeric($_GET['articleId'])) {
+            throw new \Exception("Invalid or missing articleId in the request.");
+        }
+        $this->articlesData['id'] = (int) $_GET['articleId'];
         $SingleArticle = $this->Article->getById($this->articlesData['id']);
         $this->title = $SingleArticle->title . ' | ' . $this->title;
-        $this->results['article']['id'] = $SingleArticle->id;
-        $this->results['article']['title'] = $SingleArticle->title;
-        $this->results['article']['publicationDate'] = $SingleArticle->publicationDate;
-        $this->results['article']['subcategoryId'] = $SingleArticle->subcategoryId;
-        $this->results['article']['summary'] = $SingleArticle->summary;
-        $this->results['article']['content'] = $SingleArticle->content;
-        $this->results['article']['active'] = $SingleArticle->active;
-        $this->results['article']['subcategory'] = $this->Subcategory->getById(
-                $this->results['article']['subcategoryId']);
+        $this->results['article'] = [
+            'id' => $SingleArticle->id,
+            'title' => $SingleArticle->title,
+            'publicationDate' => $SingleArticle->publicationDate,
+            'subcategoryId' => $SingleArticle->subcategoryId,
+            'summary' => $SingleArticle->summary,
+            'content' => $SingleArticle->content,
+            'active' => $SingleArticle->active,
+            'subcategory' => $this->Subcategory->getById($SingleArticle->subcategoryId)
+        ];
         $connections = $this->Connection->getById($this->results['article']['id']);
-        $connectionsCount = count($connections);
+        $this->results['authors'] = [];
         
         foreach ($connections as $connection)
         {
@@ -107,8 +129,8 @@ class HomepageController extends \ItForFree\SimpleMVC\MVC\Controller
 				$_GET['subcategoryId'] ) ? (int)$_GET['subcategoryId'] : null;
         $this->results['subcategory'] = $this->Subcategory->getById($subcategoryId);
         $this->results['category'] = $this->Category->getById(
-                $this->results['subcategory']->cat_id);
-        $data = $this->Subcategory->getList(100000,$this->results['subcategory']->cat_id);
+                $this->results['subcategory']->categoryId);
+        $data = $this->Subcategory->getList(100000,$this->results['subcategory']->categoryId);
         $articleArr = array();
         foreach($data['results'] as $subcategory){
 			$articleArr[] = $this->Article->getList(100000, $subcategory->id, true);
@@ -132,4 +154,78 @@ class HomepageController extends \ItForFree\SimpleMVC\MVC\Controller
 	$this->view->addVar('Category', $this->Category);
 	$this->view->render('homepage/archive.php');
     }
+    public function singleArticleAction()
+{
+    $this->initModelObjects();
+
+    if (empty($_GET['articleId'])) {
+        throw new InvalidArgumentException('ID статьи обязателен.');
+    }
+
+    $articleId = (int) $_GET['articleId'];
+
+    $article = $this->Article->getById($articleId);
+    if (!$article) {
+        throw new NotFoundException('Статья не найдена.');
+    }
+    $authorsData = $this->Article->getAuthors($articleId);  
+    $authors = $authorsData['authors'] ?? 'Не указано';
+    $this->title = $article->title . ' | ' . $this->title;
+
+    $subcategory = $this->Subcategory->getById($article->subcategoryId);
+    $subcategoryName = $subcategory ? $subcategory->name : 'Подкатегория не указана';
+
+    $this->results['article'] = [
+        'id' => $article->id,
+        'title' => $article->title,
+        'publicationDate' => $article->publicationDate,
+        'subcategoryId' => $article->subcategoryId,
+        'summary' => $article->summary,
+        'content' => $article->content,
+        'active' => $article->active,
+        'subcategory' => $subcategoryName,
+        'authors' => $authors,
+    ];
+    $this->view->addVar('results', $this->results);
+    $this->view->addVar('title', $this->title);
+    $this->view->render('homepage/singleArticle.php');
+}
+
+public function viewArticleSubcategoryAction() {
+    $this->initModelObjects();
+    
+    $subcategoryId = isset($_GET['subcategoryId']) ? (int) $_GET['subcategoryId'] : null;
+
+    if (!$subcategoryId) {
+        $this->view->addVar('title', 'Subcategory not found');
+        $this->view->render('homepage/error.php');
+        return;
+    }
+    $articlesData = $this->Article->getList(100, null, false, $subcategoryId);
+
+    $this->results['articles'] = $articlesData['results'];
+    $this->results['totalRows'] = $articlesData['totalRows'];
+    $this->results['subcategory'] = $this->Subcategory->getById($subcategoryId);
+
+    $this->view->addVar('title', $this->results['subcategory']->name ?? 'Articles');
+    $this->view->addVar('results', $this->results);
+    $this->view->addVar('Subcategory', $this->Subcategory);
+
+    $this->view->render('homepage/viewArticleSubcategory.php');
+}
+public function viewArticleCategoryAction()
+{
+    $this->initModelObjects();
+    $categoryId = isset($_GET['categoryId']) ? (int)$_GET['categoryId'] : null;
+    $articlesData = $this->Article->getList(100, null, false, $categoryId);
+    $this->results['articles'] = $articlesData['results'];
+    $this->results['totalRows'] = $articlesData['totalRows'];
+    $this->results['category'] = $this->Category->getById($categoryId);
+     $this->view->addVar('title', $this->results['category']->name ?? 'Articles');
+    $this->view->addVar('results', $this->results);
+    $this->view->addVar('Category', $this->Category);
+    $this->view->render('homepage/viewArticleCategory.php');
+}
+
+  
 }

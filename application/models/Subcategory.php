@@ -9,13 +9,14 @@ class Subcategory extends \ItForFree\SimpleMVC\MVC\Model
     public string $tableName = 'subcategories';
     public ?int $id = null;
     public $name = null;
-    public $cat_id = null;
+    public $description = null;
+    public $categoryId = null;
     public function storeFormValues($params){
 		$this->__construct( $params );
 	}
         public function getList($numRows = 1000000, $categoryId = null, $order = "name ASC") : array
     {
-        $categoryClause = $categoryId !== null ? "WHERE cat_id = :categoryId" : "";
+        $categoryClause = $categoryId !== null ? "WHERE categoryId = :categoryId" : "";
         $sql = "SELECT * FROM $this->tableName $categoryClause ORDER BY $order LIMIT :numRows";
         $st = $this->pdo->prepare($sql);
         $st->bindValue(":numRows", $numRows, \PDO::PARAM_INT);
@@ -40,11 +41,32 @@ class Subcategory extends \ItForFree\SimpleMVC\MVC\Model
             "totalRows" => $totalRows['totalRows']
         ];
     }
-
+    
+    #[\Override]
+    public function getById(int $id, string $tableName = ''): ?Model
+    {  
+        $tableName = !empty($tableName) ? $tableName : $this->tableName;
+        
+        $sql = "SELECT * FROM $tableName where id = :id";      
+        $modelClassName = static::class;
+        
+        $st = $this->pdo->prepare($sql); 
+        
+        $st->bindValue(":id", $id, \PDO::PARAM_INT);
+        $st->execute();
+        $row = $st->fetch();
+        
+        if ($row) { 
+            return new $modelClassName( $row );
+        } else {
+            return null;
+        }
+    }
+    
     public function getCategIdByName($name){
         $sql = "SELECT id FROM categories WHERE name = :name ";
         $st = $this->pdo->prepare($sql);
-        $st->bindValue(":name", $name, PDO::PARAM_STR);
+        $st->bindValue(":name", $name, \PDO::PARAM_STR);
 	$st->execute();
 	$row = $st->fetch();
 	$conn = null;
@@ -66,10 +88,10 @@ class Subcategory extends \ItForFree\SimpleMVC\MVC\Model
 				. "Attempt to insert a Subcategory object that already has its "
 				. "ID property set (to $this->id).", E_USER_ERROR );
 		//Вставляем субкатегорию
-		$sql = "INSERT INTO $this->tableName(name, cat_id) VALUES(:name, :cat_id)";
+		$sql = "INSERT INTO $this->tableName(name, categoryId) VALUES(:name, :categoryId)";
 		$st = $this->pdo->prepare($sql);
 		$st->bindValue(":name", $this->name, \PDO::PARAM_STR );
-		$st->bindValue(":cat_id", $this->cat_id, \PDO::PARAM_INT );
+		$st->bindValue(":categoryId", $this->categoryId, \PDO::PARAM_INT );
 		$st->execute();
 		$this->id = $this->pdo->lastInsertId();
 	}
@@ -78,10 +100,10 @@ class Subcategory extends \ItForFree\SimpleMVC\MVC\Model
 		if ( is_null( $this->id ) ) trigger_error ( "Subcategory::insert(): "
 				. "Attempt to insert a Subcategory object that does not have its "
 				. "ID property set (to $this->id).", E_USER_ERROR );
-		$sql = "UPDATE $this->tableName SET name=:name, cat_id=:cat_id WHERE id=:id";
+		$sql = "UPDATE $this->tableName SET name=:name, categoryId=:categoryId WHERE id=:id";
 		$st = $this->pdo->prepare($sql);
 		$st->bindValue(":name", $this->name, \PDO::PARAM_STR);
-		$st->bindValue(":cat_id", $this->cat_id, \PDO::PARAM_INT);
+		$st->bindValue(":categoryId", $this->categoryId, \PDO::PARAM_INT);
 		$st->bindValue(":id", $this->id, \PDO::PARAM_INT);
 		$st->execute();
         }
