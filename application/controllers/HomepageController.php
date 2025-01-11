@@ -40,19 +40,23 @@ class HomepageController extends \ItForFree\SimpleMVC\MVC\Controller
 
     $subcategoriesData = $this->Subcategory->getList();
     $categoriesData = $this->Category->getList();
+    
 
     $this->results['subcategories'] = array();
     $this->results['categories'] = array();
-    
+    $this->results['authors'] = array();
 
     foreach ($categoriesData['results'] as $category) {
         $this->results['categories'][$category->id] = $category;  
     }
-
-
+    
     // Проходим по подкатегориям и получаем данные
     foreach ($subcategoriesData['results'] as $subcategory) {
         $this->results['subcategories'][$subcategory->id] = $subcategory;
+    }
+     foreach ($this->articlesData['results'] as $article) {
+        $authorsData = $this->Article->getAuthors($article->id); // Получаем авторов для статьи
+        $this->results['authors'][$article->id] = $authorsData['authors']; // Сохраняем авторов по ID статьи
     }
 }
 
@@ -226,6 +230,18 @@ public function viewArticleCategoryAction()
     $this->view->addVar('Category', $this->Category);
     $this->view->render('homepage/viewArticleCategory.php');
 }
-
+public function viewArticleAuthorsAction()
+{
+    $this->initModelObjects();
+    $authorsId = isset($_GET['authorsId']) ? (int)($_GET['authorsId']) : null;
+    $articlesData = $this->Article->getList(100,null,false,$authorsId);
+    $this->results['articles'] = $articlesData['results'];
+    $this->results['totalRows'] = $articlesData['totalRows'];
+    $this->results['authors'] = $this->Users->getById($authorsId);
+    $this->view->addVar('title', $this->results['authors']->login ?? 'Articles' );
+    $this->view->addVar('results', $this->results);
+    $this->view->addVar('Users', $this->Category);
+    $this->view->render('homepage/viewArticleAuthors.php');
+}
   
 }

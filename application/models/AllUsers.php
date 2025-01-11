@@ -19,7 +19,7 @@ class AllUsers extends \ItForFree\SimpleMVC\MVC\Model
 	/**
     * @var int ID пользователя из базы данных
     */
-public ?int $id = null;
+    public ?int $id = null;
 	
 	/**
     * @var string Логин пользователя
@@ -47,27 +47,27 @@ public ?int $id = null;
             return false;
         }
     }
-    public function storeFormValues($params){
-		$this->__construct( $params );
-	}
-        public function getList($numRows=1000000):array
-        {
-            $sql = "SELECT SQL_CALC_FOUND_ROWS * FROM users";
-            $st = $this->pdo->query($sql);
-            $list = array ();
-            while ($row = $st->fetch()){
-                $user = new User($row);
-                $list[] = $user;
+        public function storeFormValues($params){
+                    $this->__construct( $params );
             }
-            $sql = "SELECT FOUND_ROWS() AS totalRows";
-            $totalRows = $this->pdo->query($sql)->fetch();
-            $conn = null;
-            return (array(
-                "results" =>$list,
-                "totalRows" => $totalRows[0]
-            )
-            );
-        }
+            
+        public function getList($numRows=1000000):array
+            {
+                $sql = "SELECT  * FROM users";
+                $st = $this->pdo->query($sql);
+                $list = array ();
+                while ($row = $st->fetch()){
+                    $user = new AllUsers($row);
+                    $list[] = $user;
+                }
+                $sql = "SELECT FOUND_ROWS() AS totalRows";
+                $totalRows = $this->pdo->query($sql)->fetch();
+                return (array(
+                    "results" =>$list,
+                    "totalRows" => $totalRows[0]
+                )
+                );
+        }   
         public function insert(){
             $sql = "INSERT INTO users(login, password, active) VALUES(:login, :password, :active)";
             $st = $this->pdo->prepare($sql);
@@ -86,16 +86,25 @@ public ?int $id = null;
             $st->bindValue( ":id", $this->userId, \PDO::PARAM_INT );
             $st->execute();
         }
-         public function getById(int $id, string $tableName = ''): ?Model{
-            $sql = "SELECT * FROM users WHERE id = :id ";
-            $st = $this->pdo->prepare($sql);
-            $st->bindValue(":id",$id,PDO::PARAM_INT);
-            $st->execute();
-            $row = $st->fetch();
-            if ($row){
-                return new User($row);
-            }
+         public function getById(int $id, string $tableName = ''): ?Model
+    {  
+        $tableName = !empty($tableName) ? $tableName : $this->tableName;
+        
+        $sql = "SELECT * FROM $tableName where id = :id";      
+        $modelClassName = static::class;
+        
+        $st = $this->pdo->prepare($sql); 
+        
+        $st->bindValue(":id", $id, \PDO::PARAM_INT);
+        $st->execute();
+        $row = $st->fetch();
+        
+        if ($row) { 
+            return new $modelClassName( $row );
+        } else {
+            return null;
         }
+    }
         public function delete():void{
             $st = $this->pdo->prepare("DELETE FROM users WHERE login = :login LIMIT 1");
             $st->bindValue(":login",$this->login,PDO::PARAM_STR);

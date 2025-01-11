@@ -4,6 +4,9 @@ use ItForFree\SimpleMVC\Config;
 use ItForFree\SimpleMVC\Url;
 use application\models\Article;
 use application\models\AllUsers;
+use application\models\Category;
+use application\models\Subcategory;
+use application\models\Connection;
 class AdminController extends \ItForFree\SimpleMVC\MVC\Controller
 {
     public $articlesData = array();
@@ -24,13 +27,19 @@ class AdminController extends \ItForFree\SimpleMVC\MVC\Controller
     protected function getArticles(){
         $this->articlesData = $this->Article->getList();
         $this->results['articles'] = $this->articlesData['results'];
-        $this->results['totalRows'] = $this->artcilesData['totalRows'];
-        $this->articlesData = $this->Subcategory->getList();
-        $this->results['subcategories'] = array();
-        foreach($this->results['subcategories'] as $subcategory){
-            $this->results['subcategories'][$subcategory->id] = $subcategory;
-            $this->results['categories'] [$subcategory->id] = $this->Category->getById($subcategory->categoryId);
+        $this->results['totalRows'] = $this->articlesData['totalRows'];
+        
+        $categoriesData = $this->Category->getList();
+        foreach ($categoriesData['results'] as $category){
+            $this->results['category'][$category->id] = $category->name;
         }
+       
+        $subcategoryData = $this->Subcategory->getList();
+        foreach($subcategoryData['results'] as $subcategory){
+            $this->results['subcategory'][$subcategory->id] = $subcategory->name;
+            $this->results['categories']['$subcategory->id'] = $this->Category->getById($subcategory->categoryId);
+        }
+        
     }
     public function indexAction(){
         $this->initModelObjects();

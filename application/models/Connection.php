@@ -22,7 +22,7 @@ class Connection extends \ItForFree\SimpleMVC\MVC\Model
         
         $st = $this->pdo->prepare($sql); 
         
-        $st->bindValue(":id", $id, \PDO::PARAM_INT);
+        $st->bindValue(":id", $id, PDO::PARAM_INT);
         $st->execute();
 		$row = null;
 		while ($row = $st->fetch()) {

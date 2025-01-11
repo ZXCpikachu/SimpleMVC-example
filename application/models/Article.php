@@ -6,6 +6,7 @@ use ItForFree\SimpleMVC\MVC\Model;
 class Article extends \ItForFree\SimpleMVC\MVC\Model
 {
     public string $tableName = 'articles';
+    public $articleId = null;
     public $publicationDate = null;
     public $title = null;
     public $subcategoryId = null;
@@ -13,8 +14,8 @@ class Article extends \ItForFree\SimpleMVC\MVC\Model
     public $categoryId = null;
     public $content = null;
     public $active = null;
-    public $articleId = null;
-    public $autors = null;
+    public $authors = null;
+    
     public function storeFormValues ( $params ) {
 
       // Сохраняем все параметры
@@ -55,71 +56,95 @@ class Article extends \ItForFree\SimpleMVC\MVC\Model
             return null;
         }
     }
-    public function getList($numRows=1000000, $categoryId = null, $useActiveValue = false,$subcategoryId = null,$authorsId = null, $order = "publicationDate DESC") :array
-    {
-        if($useActiveValue === false) {
-            if($categoryId) {
-                $categoryClause = "WHERE categoryId = :categoryId";
-            } elseif($subcategoryId) {
-                $categoryClause = "wHERE subcategoryId = $subcategoryId";
-            } else {
-                $categoryClause= "";
-            }
-        } else {
-            if($categoryId) {
-                $categoryClause = "WHERE categoryId = :categoryId "
-                        . "AND active =  $useActiveValue";
-            } elseif($subcategoryId) {
-                $categoryClause = "WHERE subcategoryId = $subcategoryId "
-                        . "AND active = $useActiveValue";
-            } elseif($author){
-                $categoryClause = "WHERE user = $author "
-            . "AND active = $useActiveValue";
-                
-            }
-            else {
-                    $categoryClause = "WHERE active = " . $useActiveValue;
-                }
-        }
-		
-        $sql = "SELECT SQL_CALC_FOUND_ROWS a.*, 
-               UNIX_TIMESTAMP(a.publicationDate) AS publicationDate, 
-               GROUP_CONCAT(users.login SEPARATOR ', ') AS users_login
-        FROM articles AS a
-        LEFT JOIN users_article AS t1 ON a.id = t1.articles
-        LEFT JOIN users ON users.id = t1.user
-        $categoryClause
-        GROUP BY a.id
-        ORDER BY $order
-        LIMIT :numRows";
-
-
-        
-        $modelClassName = static::class;
-       
-        $st = $this->pdo->prepare($sql);
-        $st->bindValue( ":numRows", $numRows, \PDO::PARAM_INT );
-        $st->execute();
-        $list = array();
-        
-        while ($row = $st->fetch()) {
-            $example = new $modelClassName($row);
-            $list[] = $example;
-        }
-
-        $sql = "SELECT FOUND_ROWS() AS totalRows"; 
-        $totalRows = $this->pdo->query($sql)->fetch();
-        return (array ("results" => $list, "totalRows" => $totalRows[0]));
+    public function getList(
+    $numRows = 1000000, 
+    $categoryId = null, 
+    $useActiveValue = false,
+    $subcategoryId = null, 
+    $authorsId = null, 
+    $order = "publicationDate DESC"
+): array {
+    // Формируем условия WHERE
+    $conditions = [];
+    if ($useActiveValue !== false) {
+        $conditions[] = "a.active = :active";
     }
-    public function getAuthors($articleId): array
+    if ($categoryId) {
+        $conditions[] = "a.categoryId = :categoryId";
+    }
+    if ($subcategoryId) {
+        $conditions[] = "a.subcategoryId = :subcategoryId";
+    }
+    if ($authorsId) {
+        $conditions[] = "t1.user = :authorsId";
+    }
+    $categoryClause = $conditions ? "WHERE " . implode(" AND ", $conditions) : "";
+
+    // SQL-запрос
+    $sql = "SELECT SQL_CALC_FOUND_ROWS a.*, 
+               UNIX_TIMESTAMP(a.publicationDate) AS publicationDate, 
+               GROUP_CONCAT(authors.login SEPARATOR ', ') AS authors_login
+            FROM articles AS a
+            LEFT JOIN users_article AS t1 ON a.id = t1.articles
+            LEFT JOIN users AS authors ON authors.id = t1.user
+            $categoryClause
+            GROUP BY a.id
+            ORDER BY $order
+            LIMIT :numRows";
+
+    // Подготовка и выполнение запроса
+    $st = $this->pdo->prepare($sql);
+    if ($useActiveValue !== false) {
+        $st->bindValue(":active", $useActiveValue, \PDO::PARAM_INT);
+    }
+    if ($categoryId) {
+        $st->bindValue(":categoryId", $categoryId, \PDO::PARAM_INT);
+    }
+    if ($subcategoryId) {
+        $st->bindValue(":subcategoryId", $subcategoryId, \PDO::PARAM_INT);
+    }
+    if ($authorsId) {
+        $st->bindValue(":authorsId", $authorsId, \PDO::PARAM_INT);
+    }
+    $st->bindValue(":numRows", $numRows, \PDO::PARAM_INT);
+    $st->execute();
+
+    // Формируем список результатов
+    $list = [];
+    while ($row = $st->fetch()) {
+        $modelClassName = static::class;
+        $example = new $modelClassName($row);
+        // Добавляем авторов как массив
+        if (isset($row['authors_login']) && !empty($row['authors_login'])) {
+            $example->authors = explode(', ', $row['authors_login']);
+        } else {
+            $example->authors = [];
+        }
+        $list[] = $example;
+    }
+
+    // Получаем общее количество строк
+    $sql = "SELECT FOUND_ROWS() AS totalRows";
+    $totalRows = $this->pdo->query($sql)->fetch();
+
+    // Возвращаем массив с результатами и количеством строк
+    return [
+        "results" => $list,
+        "totalRows" => $totalRows[0]
+    ];
+}
+
+
+     public function getAuthors($articleId): array
 {
     $sql = "
         SELECT GROUP_CONCAT(users.login SEPARATOR ', ') AS users_name
         FROM users
         JOIN users_article ON users.id = users_article.user
-        WHERE users_article.articles = 1
+        WHERE users_article.articles = :articleId
     ";
     $st = $this->pdo->prepare($sql);
+    $st->bindValue(':articleId', $articleId, \PDO::PARAM_INT);
     $st->execute();
     $result = $st->fetch();
     return ['authors' => $result['users_name'] ?? ''];

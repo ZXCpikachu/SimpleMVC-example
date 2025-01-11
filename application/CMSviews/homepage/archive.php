@@ -1,5 +1,4 @@
 <h1><?php 
-echo "14123421";
 echo htmlspecialchars( $results['pageHeading'] ) ?></h1>
     
     <?php if ( $results['category'] ) { ?>

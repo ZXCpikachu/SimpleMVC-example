@@ -28,7 +28,7 @@
             <td>
                 <?php 
                 if(isset ($article->categoryId)) {
-                    echo $results['categories'][$article->categoryId]->name;                        
+                    echo $results['category'][$article->categoryId];                        
                 }
                 else {
                     echo "Без категории";
@@ -38,7 +38,7 @@
             <td>
                 <?php
                 if (isset ($article->subcategoryId)){
-                    echo $results['subcategories'][$article->subcategoryId]->name;
+                    echo $results['subcategory'][$article->subcategoryId];
                 }
                 ?>
             </td>
