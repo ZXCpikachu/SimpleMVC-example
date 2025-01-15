@@ -1,4 +1,4 @@
-
+<?php print_r($results['authors'])?>
 <h3 class="subcategoryDescription">Статьи автора <?php 
                     echo htmlspecialchars($results['authors']->login)?></h3>
     <ul id="headlines" class="archive">

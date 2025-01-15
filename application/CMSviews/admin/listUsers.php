@@ -1,5 +1,4 @@
 <h1>Users</h1>
-
 <?php if ( isset( $results['errorMessage'] ) ) { ?>
     <div class="errorMessage"><?php echo $results['errorMessage'] ?></div>
 <?php } ?>
@@ -18,7 +17,7 @@
 
         <tr onclick="location='<?= \ItForFree\SimpleMVC\Router\WebRouter::link('Admin/editUser')?>&amp;userId=<?php echo $user->id?>'">
             <td>
-                <?php echo $user->name?>
+                <?php echo $user->login?>
             </td>
         
             <td>

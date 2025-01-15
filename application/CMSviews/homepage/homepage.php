@@ -47,9 +47,8 @@ foreach ($results['articles'] as $article) {
                         $authors = $results['authors'][$article->id];
                         $authorsLinks = [];
 
-                        // Проверяем, если это не пустой массив
                         if (is_array($authors)) {
-                            // Проходим по авторам и выводим их ссылки
+                            
                             foreach ($authors as $authorId => $authorLogin) {
                                 $authorsLinks[] = '<a href="' . \ItForFree\SimpleMVC\Router\WebRouter::link('Homepage/viewArticleAuthors') . '&authorsId=' . $authorId . '">' . htmlspecialchars($authorLogin) . '</a>';
                             }

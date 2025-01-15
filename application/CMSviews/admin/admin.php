@@ -1,5 +1,4 @@
 <h1>All Articles</h1>
-
 <?php if ( isset( $results['errorMessage'] ) ) { ?>
     <div class="errorMessage"><?php echo $results['errorMessage'] ?></div>
 <?php } ?>
@@ -60,14 +59,13 @@
                 <?php } ?>
             </td>
             <td>
-                <?php
-                if($article->activeArticle) {
-                    echo 'Active';
-                } else {
-                    echo 'Not active';
-                }
-                ?>
-            </td>
+    <?php
+    // Проверяем, если значение activeArticle равно 1 (активно)
+    echo ($article->active == 1) ? 'Active' : 'Not active';
+    ?>
+</td>
+
+
         </tr>
 
     <?php } ?>

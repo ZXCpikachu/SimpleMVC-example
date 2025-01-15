@@ -6,7 +6,8 @@
     <meta name="description" content="Your website description">
     <meta name="author" content="Your Name">
     <title><?php echo $title?></title>
-    <link rel="stylesheet" type="text/css" href="style.css" />
+    <link rel="stylesheet" type="text/css" href="/CSS/style.css" />
+
     <script src="JS/jquery-3.2.1.js"></script>
     <script src="JS/loaderIdentity.js"></script>
     <script src="JS/showContent.js"></script>

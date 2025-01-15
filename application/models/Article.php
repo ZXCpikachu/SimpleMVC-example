@@ -80,7 +80,6 @@ class Article extends \ItForFree\SimpleMVC\MVC\Model
     }
     $categoryClause = $conditions ? "WHERE " . implode(" AND ", $conditions) : "";
 
-    // SQL-запрос
     $sql = "SELECT SQL_CALC_FOUND_ROWS a.*, 
                UNIX_TIMESTAMP(a.publicationDate) AS publicationDate, 
                GROUP_CONCAT(authors.login SEPARATOR ', ') AS authors_login
@@ -108,13 +107,10 @@ class Article extends \ItForFree\SimpleMVC\MVC\Model
     }
     $st->bindValue(":numRows", $numRows, \PDO::PARAM_INT);
     $st->execute();
-
-    // Формируем список результатов
     $list = [];
     while ($row = $st->fetch()) {
         $modelClassName = static::class;
         $example = new $modelClassName($row);
-        // Добавляем авторов как массив
         if (isset($row['authors_login']) && !empty($row['authors_login'])) {
             $example->authors = explode(', ', $row['authors_login']);
         } else {
@@ -133,8 +129,6 @@ class Article extends \ItForFree\SimpleMVC\MVC\Model
         "totalRows" => $totalRows[0]
     ];
 }
-
-
      public function getAuthors($articleId): array
 {
     $sql = "

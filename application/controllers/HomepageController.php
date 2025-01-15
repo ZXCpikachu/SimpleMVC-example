@@ -55,8 +55,8 @@ class HomepageController extends \ItForFree\SimpleMVC\MVC\Controller
         $this->results['subcategories'][$subcategory->id] = $subcategory;
     }
      foreach ($this->articlesData['results'] as $article) {
-        $authorsData = $this->Article->getAuthors($article->id); // Получаем авторов для статьи
-        $this->results['authors'][$article->id] = $authorsData['authors']; // Сохраняем авторов по ID статьи
+        $authorsData = $this->Article->getAuthors($article->id); 
+        $this->results['authors'][$article->id] = $authorsData['authors']; 
     }
 }
 

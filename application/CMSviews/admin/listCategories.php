@@ -28,5 +28,3 @@
 <p><?php echo $results['totalRows']?> category<?php echo ( $results['totalRows'] != 1 ) ? 'ies' : 'y' ?> in total.</p>
 
 <p><a href="<?= \ItForFree\SimpleMVC\Router\WebRouter::link('Admin/newCategory') ?>">Add a New Category</a></p>
-
-<?php include "templates/include/footer.php" ?>

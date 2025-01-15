@@ -11,7 +11,6 @@
 <table>
 	<tr>
 		<th>Subcategory name</th>
-		<th>Category name</th>
 	</tr>
 
 	<?php foreach ($results['subcategories'] as $subcategory) { ?>
@@ -19,9 +18,6 @@
 		<tr onclick="location = '<?= \ItForFree\SimpleMVC\Router\WebRouter::link('Admin/editSubcategory')?>&amp;subcategoryId=<?php echo $subcategory->id ?>'">
 			<td>
 				<?php echo $subcategory->name ?>
-			</td>
-			<td>
-				<?php echo $subcategory->cat_name ?>
 			</td>
 		</tr>
 

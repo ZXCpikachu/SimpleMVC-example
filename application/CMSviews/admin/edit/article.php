@@ -1,5 +1,5 @@
 <h1><?php echo $results['pageTitle']?></h1>
-
+<?php print_r($results)?>
 <form action="admin.php?action=<?php echo $results['formAction']?>" method="post">
     <input type="hidden" name="articleId" value="<?php echo $articleId ?>">
     <?php if ( isset( $results['errorMessage'] ) ) { ?>
@@ -9,24 +9,24 @@
     <ul>
         <li>
             <label for="title">Article Title</label>
-            <input type="text" name="title" id="title" placeholder="Name of the article" required autofocus maxlength="255" value="<?php echo htmlspecialchars( $title )?>" />
+            <input type="text" name="title" id="title" placeholder="Name of the article" required autofocus maxlength="255" value="<?php echo htmlspecialchars( $results['article']->title )?>" />
         </li>
 
         <li>
             <label for="summary">Article Summary</label>
-            <textarea name="summary" id="summary" placeholder="Brief description of the article" required maxlength="1000" style="height: 5em;"><?php echo htmlspecialchars( $summary )?></textarea>
+            <textarea name="summary" id="summary" placeholder="Brief description of the article" required maxlength="1000" style="height: 5em;"><?php echo htmlspecialchars( $results['article']->summary  )?></textarea>
         </li>
 
         <li>
             <label for="content">Article Content</label>
-            <textarea name="content" id="content" placeholder="The HTML content of the article" required maxlength="100000" style="height: 30em;"><?php echo htmlspecialchars( $content )?></textarea>
+            <textarea name="content" id="content" placeholder="The HTML content of the article" required maxlength="100000" style="height: 30em;"><?php echo htmlspecialchars( $results['article']->content  )?></textarea>
         </li>
 
         <li>
             <label for="categoryId">Article Category</label>
             <select name="categoryId">
                 <?php foreach ($results['categories'] as $category){ ?>
-                    <option value="<?php echo $category->id?>"<?php echo ( $category->id == $categoryId ) ? " selected" : ""?>><?php echo htmlspecialchars( $category->name )?></option>
+                    <option value="<?php echo $category->id?>"<?php echo ( $category->id == $results ) ? " selected" : ""?>><?php echo htmlspecialchars( $category->name )?></option>
                 <?php } ?>
             </select>
         </li>
@@ -36,7 +36,7 @@
             <select name="subcategoryId">
                 <?php foreach ($results['subcategories'] as $subcategory) { ?>
                     <option value="<?php echo $subcategory->id?>"<?php
-                        echo ($subcategory->id == $subcategoryId) ? " selected" : "" ?>>
+                        echo ($subcategory->id == $results) ? " selected" : "" ?>>
                         <?php echo htmlspecialchars($subcategory->name) ?>
                     </option>
                 <?php } ?>
@@ -48,7 +48,7 @@
                 <option value="">Без автора</option>
                 <?php foreach ($results['authors'] as $author) { ?>
                     <option value="<?php echo $author->id ?>"<?php
-                        echo in_array($author->id, $authors) ? " selected" : "" ?>>
+                        echo in_array($author->id, $results) ? " selected" : "" ?>>
                         <?php echo htmlspecialchars($author->login) ?>
                     </option>
                 <?php } ?>
@@ -61,7 +61,7 @@
 
         <li>
             <label for="checkActivity">Active</label>
-            <input type="checkbox" name="active" value="1" id="checkActivity" <?php echo $activeArticle ? 'checked' : '' ?>>
+            <input type="checkbox" name="active" value="1" id="checkActivity" <?php echo $results['article']->active ? 'checked' : '' ?>>
         </li>
     </ul>
 

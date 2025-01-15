@@ -65,6 +65,97 @@ class AdminController extends \ItForFree\SimpleMVC\MVC\Controller
 		$this->view->render('singleArticle/singleArticle.php');
 		
 	}
+    public function editArticleAction (){
+        $this->initModelObjects();
+        $this->results['pageTitle'] = "Edit article";
+        $articleId = isset($_GET['articleId']) ? (int)($_GET['articleId']) : null;
+        $article = $this->Article->getById($articleId);
+        if ($_SERVER['REQUEST_METHOD'] == 'POST'){
+            $title = $_POST['title'];
+            $summary = $_POST['summary'];
+            $content = $_POST['content'];
+            $categoryId = $_POST['categoryId'];
+            $subcategoryId = $_POST['subcategoryId'];
+            $publicationDate = $_POST['publicationDate'];
+            $active = isset($_POST['active']) ? 1 : 0;
+            $authors = $_POST['$authors'];
+
+            $article->title = $title;
+            $article->summary = $summary;
+            $article->content = $content;
+            $article->categoryId = $categoryId;
+            $article->subcategoryId = $subcategoryId;
+            $article->publicationDate = $publicationDate;
+            $article->active = $active;
+            $article->authors = $authors ; 
+            $this->Article->update($article);
+        }
+        $this->results['article'] = $article;
+        $this->results['categories'] = $this->Category->getList()['results'];
+        $this->results['subcategories'] = $this->Subcategory->getList()['results'];
+        $this->view->addVar('results', $this->results);
+        $this->view->render('admin/edit/article.php');
+    }
+    public function editCategoryAction (){
+        $this->initModelObjects();
+        $this->results['pageTitle'] = "Edit category";
+        $categoryId = isset($_GET['categoryId']) ? (int)($_GET['categoryId']) : null;
+        $category = $this->Category->getById($categoryId);
+        if ($_SERVER['REQUEST_METHOD'] == 'POST'){
+            $name = $_POST['name'];
+            $description = $_POST['description'];
+            
+            $category->name = $name;
+            $category->description = $description;
+            $this->Category->update($category);
+        }
+        $this->results['categories'] = $this->Category->getById($categoryId);
+        $this->results['formAction'] = 'editCategory&categoryId=' . $categoryId;
+        $this->view->addVar('results',$this->results);
+        $this->view->render('admin/edit/category.php');
+    }
+    public function editSubcategoryAction(){
+        $this->initModelObjects();
+        $this->results['pageTitle'] = "Edit subcategory";
+        $subcategoryId = isset($_GET['subcategoryId']) ? (int)($_GET['subcategoryId']) : null;
+        $subcategory = $this->Subcategory->getById($subcategoryId);
+        if ($_SERVER['REQUEST_METHOD'] == 'POST'){
+            $name = $_POST['name'];
+            $description = $_POST['description'];
+            $categoryId = $_POST['categoryId'];
+            
+            $subcategory->name = $name;
+            $subcategory->description = $description;
+            $subcategory->categoryId = $categoryId;
+            $this->Subcategory->update($subcategory);
+        }
+        $this->results['subcategories'] = $this->Subcategory->getById($subcategoryId);
+        $this->results['categories'] = $this->Category->getList() ['results'];
+        $this->results['formAction'] = 'editSubcategory&subcategoryId=' . $subcategoryId;
+        $this->view->addVar('results',$this->results);
+        $this->view->render('admin/edit/subcategory.php');
+    }
+    public function editUserAction(){
+        $this->initModelObjects();
+        $this->results['pageTitle'] = "Edit User";
+        $userId = isset($_GET['userId']) ? (int)($_GET['userId']) : null;
+        $user = $this->Users->getById($userId);
+        if ($_SERVER['REQUEST_METHOD'] == 'POST'){
+            $login = $_POST['login'];
+            $password = $_POST['password'];
+            $active = $_POST['active'];
+            
+            $user->login = $login;
+            $user->password = $password;
+            $user->active = $active;
+            $this->Users->update($user);
+        }
+        $this->results['users'] = $this->Users->getById($userId);
+        $this->results['formAction'] = "editUser&userId=" . $userId;
+        $this->view->addVar('results',$this->results);
+        $this->view->render('admin/edit/user.php');
+    }
+    
     public function listCategoriesAction(){
         $this->initModelObjects();
         $data = $this->Category->getList();
@@ -99,10 +190,6 @@ class AdminController extends \ItForFree\SimpleMVC\MVC\Controller
         $this->results['pageTitle'] = "List of subcategories";
         $this->title = $this->results['pageTitle'];
         $this->view->addVar('title',$this->title);
-        foreach ($this->results['subcategories'] as $subcategory) {
-			$category = $this->Category->getById($subcategory->categoryId);
-			$subcategory->cat_name = $category->name;
-		}
         if (isset($_GET['error'])){
             if ($_GET['error'] == "subcategoryNotFound")
                 $this->results['errorMessage'] = "Error: Subcategory not found.";
@@ -116,7 +203,7 @@ class AdminController extends \ItForFree\SimpleMVC\MVC\Controller
                 $this->results['statusMessage'] = "Subcategory deleted";
         }
         $this->view->addVar('results', $this->results);
-        $this->view->render('admin/listSubcategory.php');
+        $this->view->render('admin/listSubcategories.php');
     }
     public function listUsersAction(){
         $this->initModelObjects();
