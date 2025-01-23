@@ -1,7 +1,7 @@
 <?php 
-if ($results['category']) { ?>
+if ($results['categories']) { ?>
     <h3 class="categoryDescription">
-        <?php echo htmlspecialchars($results['category']->description) ?>
+        <?php echo htmlspecialchars($results['categories']->description) ?>
     </h3>
 <?php } ?>
 
@@ -16,7 +16,7 @@ if ($results['category']) { ?>
                     <?php echo htmlspecialchars($article->title) ?>
                 </a>
 
-                <?php if (!$results['category'] && $article->categoryId && isset($results['categories'][$article->categoryId])) { ?>
+                <?php if (!$results['categories'] && $article->categoryId && isset($results['categories'][$article->categoryId])) { ?>
                     <span class="category">
                         in
                         <a href="<?= \ItForFree\SimpleMVC\Router\WebRouter::link('Homepage/archive') . '&categoryId=' . $article->categoryId ?>">

@@ -1,9 +1,16 @@
 
     <h1><?php echo $results['pageTitle'];?></h1>
     
-    <form action="admin.php?action=<?php echo $results['formAction']?>"
-          method="post">
-    
+<form method="post" 
+      action="<?= \ItForFree\SimpleMVC\Router\WebRouter::link($results['subcategories']->id ? 'admin/editSubcategory' : 'admin/newSubcategory') . ($results['subcategories']->id ? '&subcategoryId=' . $results['subcategories']->id : '') ?>">
+
+    <?php if ($results['subcategories']->id): ?>
+        <input type="hidden" name="categoryId" value="<?php echo $results['subcategories']->id ?>" />
+    <?php endif; ?>
+
+    <?php if (isset($results['errorMessage'])) { ?>
+        <div class="errorMessage"><?php echo $results['errorMessage'] ?></div>
+    <?php } ?>  
         <input type="hidden" name="subcategoryId"
                value="<?php echo $results['subcategories']->id ?>"/>
     <?php if ( isset( $results['errorMessage'] ) ) { ?>
@@ -46,9 +53,9 @@
     </form>
     
     <?php if ( $results['subcategories']->id ) { ?>
-          <p><a href="admin.php?action=deleteSubcategory&amp;subcategoryId=<?php 
-            echo $results['subcategories']->id ?>" 
-            onclick="return confirm('Delete This Subcategory?')">
-                  Delete This Subcategory
-          </a></p>
+          <p>
+            <a href="<?= \ItForFree\SimpleMVC\Router\WebRouter::link('Admin/deleteSubcategory') ?>&amp;subcategoryId=<?php echo $results['subcategories']->id ?>" onclick="return confirm('Delete This Category?')">
+            Delete This Subcategory
+        </a>
+          </p>
     <?php } ?>

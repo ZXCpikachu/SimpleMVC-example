@@ -39,41 +39,42 @@ foreach ($results['articles'] as $article) {
             <?php } ?>
 
             <?php 
-                if (isset($article->id) && isset($results['authors'][$article->id]) && !empty($results['authors'][$article->id])) { ?>
-                    <span class="authors">
-                        Авторы: 
-                        <?php 
-                        // Получаем массив авторов для этой статьи
-                        $authors = $results['authors'][$article->id];
-                        $authorsLinks = [];
+            if (isset($article->id) && isset($results['authors'][$article->id]) && !empty($results['authors'][$article->id])) { ?>
+                <span class="authors">
+                    Авторы: 
+                    <?php 
+                    $authors = $results['authors'][$article->id];
+                    $authorsLinks = [];
 
-                        if (is_array($authors)) {
-                            
-                            foreach ($authors as $authorId => $authorLogin) {
-                                $authorsLinks[] = '<a href="' . \ItForFree\SimpleMVC\Router\WebRouter::link('Homepage/viewArticleAuthors') . '&authorsId=' . $authorId . '">' . htmlspecialchars($authorLogin) . '</a>';
-                            }
-                        } else {
-                            // Если авторов всего один, просто добавляем ссылку для него
-                            $authorsLinks[] = '<a href="' . \ItForFree\SimpleMVC\Router\WebRouter::link('Homepage/viewArticleAuthors') . '&authorsId=' . $article->id . '">' . htmlspecialchars($authors) . '</a>';
+                    if (is_array($authors)) {
+                        foreach ($authors as $authorId => $author) {
+                            // Предполагаем, что свойство login является строкой
+                            $authorsLinks[] = '<a href="' . \ItForFree\SimpleMVC\Router\WebRouter::link('Homepage/viewArticleAuthors') . '?authorsId=' . $authorId . '">' . htmlspecialchars($author->login) . '</a>';
                         }
+                    } else {
+                        // Если автор только один
+                        $authorsLinks[] = '<a href="' . \ItForFree\SimpleMVC\Router\WebRouter::link('Homepage/viewArticleAuthors') . '?authorsId=' . $article->id . '">' . htmlspecialchars($authors->login) . '</a>';
+                    }
 
-                        echo implode(', ', $authorsLinks);
-                        ?>
-                    </span>
+                    echo implode(', ', $authorsLinks);
+                    ?>
+                </span>
             <?php } ?>
+
+
 
         </h2>
         
         <p class="summary"><?php echo htmlspecialchars($article->content)?></p>
         <img id="loader-identity" src="JS/ajax-loader.gif" alt="gif">
         <ul class="ajax-load">
-            <li><a href="<?= \ItForFree\SimpleMVC\Router\WebRouter::link('Homepage/viewArticle') . '&articleId=' . $article->id ?>" class="ajaxArticleBodyByPost" data-contentId="<?php echo $article->id?>">Показать продолжение (POST)</a></li>
-            <li><a href="<?= \ItForFree\SimpleMVC\Router\WebRouter::link('Homepage/viewArticle') . '&articleId=' . $article->id ?>" class="ajaxArticleBodyByGet" data-contentId="<?php echo $article->id?>">Показать продолжение (GET)</a></li>
-            <li><a href="<?= \ItForFree\SimpleMVC\Router\WebRouter::link('Homepage/viewArticle') . '&articleId=' . $article->id ?>" class="loadArticle" style="cursor:pointer" data-contentId="<?=$article->id?>">(POST) -- NEW</a></li>
-            <li><a href="<?= \ItForFree\SimpleMVC\Router\WebRouter::link('Homepage/viewArticle') . '&articleId=' . $article->id ?>" class="loadArticle" style="cursor:pointer" data-contentId="<?=$article->id?>">(GET)  -- NEW</a></li>
+            <li><a href="<?= \ItForFree\SimpleMVC\Router\WebRouter::link('Homepage/singleArticle') . '&articleId=' . $article->id ?>" class="ajaxArticleBodyByPost" data-contentId="<?php echo $article->id?>">Показать продолжение (POST)</a></li>
+            <li><a href="<?= \ItForFree\SimpleMVC\Router\WebRouter::link('Homepage/singleArticle') . '&articleId=' . $article->id ?>" class="ajaxArticleBodyByGet" data-contentId="<?php echo $article->id?>">Показать продолжение (GET)</a></li>
+            <li><a href="<?= \ItForFree\SimpleMVC\Router\WebRouter::link('Homepage/singleArticle') . '&articleId=' . $article->id ?>" class="loadArticle" style="cursor:pointer" data-contentId="<?=$article->id?>">(POST) -- NEW</a></li>
+            <li><a href="<?= \ItForFree\SimpleMVC\Router\WebRouter::link('Homepage/singleArticle') . '&articleId=' . $article->id ?>" class="loadArticle" style="cursor:pointer" data-contentId="<?=$article->id?>">(GET)  -- NEW</a></li>
         </ul>
 
-        <a href="<?= \ItForFree\SimpleMVC\Router\WebRouter::link('Homepage/viewArticle') . '&articleId=' . $article->id ?>" class="showContent" data-contentId="<?php echo $article->id?>">Показать полностью</a>
+        <a href="<?= \ItForFree\SimpleMVC\Router\WebRouter::link('Homepage/singleArticle') . '&articleId=' . $article->id ?>" class="showContent" data-contentId="<?php echo $article->id?>">Показать полностью</a>
     </li>
 <?php } ?>
 </ul>

@@ -15,3 +15,5 @@
   <body>
     <div id="container">
       <a href="."><img id="logo" src="images/logo.jpg" alt="Logo of Widget News" /></a>
+    <p>You are logged in as <b><?php echo $User->userName ?></b>.
+        <a href="<?= \ItForFree\SimpleMVC\Router\WebRouter::link('Login/logout') ?>">Log out </a>

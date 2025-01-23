@@ -2,7 +2,7 @@
 <?php if ( isset( $results['errorMessage'] ) ) { ?>
     <div class="errorMessage"><?php echo $results['errorMessage'] ?></div>
 <?php } ?>
-
+<?php print_r($results['authors'][2])?>
 <?php if ( isset( $results['statusMessage'] ) ) { ?>
     <div class="statusMessage"><?php echo $results['statusMessage'] ?></div>
 <?php } ?>

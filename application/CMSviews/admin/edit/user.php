@@ -1,8 +1,10 @@
 <h1><?php echo $results['pageTitle']?></h1>
-        <form action="admin.php?action=<?php 
-                                   echo $results['formAction']?>" method="post">
-            <input type="hidden" name="userLogin" value="<?php 
-                                               echo $results['users']->login ?>">
+        <form method="post" 
+      action="<?= \ItForFree\SimpleMVC\Router\WebRouter::link($results['users']->id ? 'admin/editUser' : 'admin/newUser') . ($results['users']->id ? '&userId=' . $results['users']->id : '') ?>">
+
+    <?php if ($results['users']->id): ?>
+        <input type="hidden" name="userId" value="<?= htmlspecialchars($results['users']->id, ENT_QUOTES, 'UTF-8') ?>" />
+    <?php endif; ?>
     <?php if (isset($results['errorMessage'])) { ?>
             <div class="errorMessage"><?php 
                                           echo $results['errorMessage'] ?></div>
@@ -39,9 +41,9 @@
             </div>
         </form>
     <?php if ($results['users']->login) { ?>
-          <p><a href="admin.php?action=deleteUser&amp;userLogin=<?php 
-            echo $results['users']->login ?>" 
-            onclick="return confirm('Delete This User?')">
-                  Delete This User
-          </a></p>
+          <p>
+        <a href="<?= \ItForFree\SimpleMVC\Router\WebRouter::link('Admin/deleteUser') ?>&amp;userId=<?php echo $results['users']->id ?>" onclick="return confirm('Delete This Category?')">
+            Delete This User
+        </a>
+          </p>
     <?php } ?>

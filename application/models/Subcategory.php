@@ -87,24 +87,21 @@ class Subcategory extends \ItForFree\SimpleMVC\MVC\Model
 		if ( !is_null( $this->id ) ) trigger_error ( "Subcategory::insert(): "
 				. "Attempt to insert a Subcategory object that already has its "
 				. "ID property set (to $this->id).", E_USER_ERROR );
-		//Вставляем субкатегорию
-		$sql = "INSERT INTO $this->tableName(name, categoryId) VALUES(:name, :categoryId)";
+		$sql = "INSERT INTO $this->tableName(name,description ,categoryId) VALUES(:name,:description ,:categoryId)";
 		$st = $this->pdo->prepare($sql);
 		$st->bindValue(":name", $this->name, \PDO::PARAM_STR );
+                $st->bindValue(":description",$this->description, \PDO::PARAM_STR);
 		$st->bindValue(":categoryId", $this->categoryId, \PDO::PARAM_INT );
 		$st->execute();
 		$this->id = $this->pdo->lastInsertId();
 	}
-    public function update(){
-		// Проверяем есть ли уже у обьекта Subcategory ID ?
-		if ( is_null( $this->id ) ) trigger_error ( "Subcategory::insert(): "
-				. "Attempt to insert a Subcategory object that does not have its "
-				. "ID property set (to $this->id).", E_USER_ERROR );
-		$sql = "UPDATE $this->tableName SET name=:name, categoryId=:categoryId WHERE id=:id";
+    public function update($subcategory){
+		$sql = "UPDATE $this->tableName SET name=:name, description = :description, categoryId=:categoryId WHERE id=:id";
 		$st = $this->pdo->prepare($sql);
-		$st->bindValue(":name", $this->name, \PDO::PARAM_STR);
-		$st->bindValue(":categoryId", $this->categoryId, \PDO::PARAM_INT);
-		$st->bindValue(":id", $this->id, \PDO::PARAM_INT);
+		$st->bindValue(":name", $subcategory->name, \PDO::PARAM_STR);
+                $st->bindValue(":description", $subcategory->description, \PDO::PARAM_STR);
+		$st->bindValue(":categoryId", $subcategory->categoryId, \PDO::PARAM_INT);
+		$st->bindValue(":id", $subcategory->id, \PDO::PARAM_INT);
 		$st->execute();
         }
     public function delete() :void {

@@ -17,27 +17,21 @@ class User extends \ItForFree\SimpleMVC\User
             return "authorized";
         }
     }
-    protected function checkAuthData(string $login, string $pass): bool
+   
+    public function checkAuthData(string $login, string $pass): bool
     {
         $result = false;
-
+        $User = new AllUsers();
         if ($login == Config::get('core.admin.username')) {
-            // Проверка для админа
             if ($pass == Config::get('core.admin.password')) {
+            $result = true;
+        }
+        } else {
+            $authData = $User->getAuthData($login);
+            if ($authData && $authData['password'] == $pass && $authData['active'] == 1){
                 $result = true;
             }
-        } else {
-            // Проверка для обычного пользователя
-            $sql = "SELECT pass, active FROM users WHERE name = :name;";
-            $query = $this->pdo->prepare($sql);
-            $query->bindValue(":name", $login, \PDO::PARAM_STR);
-            $query->execute();
-            $truePass = $query->fetch();
-            if ($truePass && $truePass['pass'] == $pass && $truePass['active'] == 1) {
-                $result = true; // Учет поля активного пользователя
-            }
         }
-
         return $result;
     }
 }

@@ -6,7 +6,7 @@ use ItForFree\SimpleMVC\MVC\Model;
 class Article extends \ItForFree\SimpleMVC\MVC\Model
 {
     public string $tableName = 'articles';
-    public $articleId = null;
+    
     public $publicationDate = null;
     public $title = null;
     public $subcategoryId = null;
@@ -154,13 +154,13 @@ class Article extends \ItForFree\SimpleMVC\MVC\Model
         // Вставляем статью
         $sql = "INSERT INTO articles ( publicationDate, categoryId,subcategoryId ,title, summary, content, active ) VALUES ( FROM_UNIXTIME(:publicationDate), :categoryId,:subcategoryId ,:title, :summary, :content, :active )";
         $st = $this->pdo->prepare ( $sql );
-        $st->bindValue( ":publicationDate", $this->publicationDate, PDO::PARAM_INT );
-        $st->bindValue( ":categoryId", $this->categoryId, PDO::PARAM_INT );
-        $st->bindValue( ":subcategoryId", $this->subcategoryId, PDO::PARAM_INT );
-        $st->bindValue( ":title", $this->title, PDO::PARAM_STR );
-        $st->bindValue( ":summary", $this->summary, PDO::PARAM_STR );
-        $st->bindValue( ":content", $this->content, PDO::PARAM_STR );
-        $st->bindValue( ":active", $this->activeArticle, PDO::PARAM_INT);
+        $st->bindValue( ":publicationDate", $this->publicationDate, \PDO::PARAM_INT );
+        $st->bindValue( ":categoryId", $this->categoryId, \PDO::PARAM_INT );
+        $st->bindValue( ":subcategoryId", $this->subcategoryId, \PDO::PARAM_INT );
+        $st->bindValue( ":title", $this->title, \PDO::PARAM_STR );
+        $st->bindValue( ":summary", $this->summary, \PDO::PARAM_STR );
+        $st->bindValue( ":content", $this->content, \PDO::PARAM_STR );
+        $st->bindValue( ":active", $this->active, \PDO::PARAM_INT);
         $st->execute();
         $this->id = $this->pdo->lastInsertId();
         $st = $this->pdo->prepare($sql);

@@ -40,6 +40,7 @@ class HomepageController extends \ItForFree\SimpleMVC\MVC\Controller
 
     $subcategoriesData = $this->Subcategory->getList();
     $categoriesData = $this->Category->getList();
+    $authorsData = $this->Users->getList();
     
 
     $this->results['subcategories'] = array();
@@ -50,13 +51,11 @@ class HomepageController extends \ItForFree\SimpleMVC\MVC\Controller
         $this->results['categories'][$category->id] = $category;  
     }
     
-    // Проходим по подкатегориям и получаем данные
     foreach ($subcategoriesData['results'] as $subcategory) {
         $this->results['subcategories'][$subcategory->id] = $subcategory;
     }
-     foreach ($this->articlesData['results'] as $article) {
-        $authorsData = $this->Article->getAuthors($article->id); 
-        $this->results['authors'][$article->id] = $authorsData['authors']; 
+     foreach ($authorsData['results'] as $author) {
+         $this->results['authors'][$author->id] = $author;
     }
 }
 
@@ -122,8 +121,6 @@ class HomepageController extends \ItForFree\SimpleMVC\MVC\Controller
 		
 		$this->view->addVar('title', $this->title);
 		$this->view->addVar('results', $this->results);
-		/*Передаем также объект категории т.к. его методы унаследованы от 
-		 * родительского класса model и не являются статическими*/
 		$this->view->addVar('Category', $this->Category);
 		$this->view->render('homepage/archive.php');
 	}
@@ -205,7 +202,7 @@ public function viewArticleSubcategoryAction() {
         $this->view->render('homepage/error.php');
         return;
     }
-    $articlesData = $this->Article->getList(100, null, false, $subcategoryId);
+    $articlesData = $this->Article->getList(10000,null,1,$subcategoryId);
 
     $this->results['articles'] = $articlesData['results'];
     $this->results['totalRows'] = $articlesData['totalRows'];
@@ -221,11 +218,11 @@ public function viewArticleCategoryAction()
 {
     $this->initModelObjects();
     $categoryId = isset($_GET['categoryId']) ? (int)$_GET['categoryId'] : null;
-    $articlesData = $this->Article->getList(100, null, false, $categoryId);
+    $articlesData = $this->Article->getList(10000,$categoryId,1);
     $this->results['articles'] = $articlesData['results'];
     $this->results['totalRows'] = $articlesData['totalRows'];
-    $this->results['category'] = $this->Category->getById($categoryId);
-     $this->view->addVar('title', $this->results['category']->name ?? 'Articles');
+    $this->results['categories'] = $this->Category->getById($categoryId);
+     $this->view->addVar('title', $this->results['categories']->name ?? 'Articles');
     $this->view->addVar('results', $this->results);
     $this->view->addVar('Category', $this->Category);
     $this->view->render('homepage/viewArticleCategory.php');

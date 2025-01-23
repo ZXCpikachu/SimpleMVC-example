@@ -77,13 +77,13 @@ class AllUsers extends \ItForFree\SimpleMVC\MVC\Model
             $st->execute();
             $this->id = $this->pdo->lastInsertId();
 	}
-        public function update() {
-            $sql = "UPDATE users SET login=:login, password=:password, active=:active WHERE id = :id";
+        public function update($user) {
+            $sql = "UPDATE $this->tableName SET login=:login, password=:password, active=:active WHERE id = :id";
             $st = $this->pdo->prepare( $sql );
-            $st->bindValue( ":login", $this->login,\PDO::PARAM_STR );
-            $st->bindValue( ":password", $this->password, \PDO::PARAM_STR );
-	    $st->bindValue( ":active", $this->active, \PDO::PARAM_INT );
-            $st->bindValue( ":id", $this->userId, \PDO::PARAM_INT );
+            $st->bindValue( ":login", $user->login,\PDO::PARAM_STR );
+            $st->bindValue( ":password", $user->password, \PDO::PARAM_STR );
+	    $st->bindValue( ":active", $user->active, \PDO::PARAM_INT );
+            $st->bindValue( ":id", $user->id, \PDO::PARAM_INT );
             $st->execute();
         }
          public function getById(int $id, string $tableName = ''): ?Model
@@ -106,29 +106,28 @@ class AllUsers extends \ItForFree\SimpleMVC\MVC\Model
         }
     }
         public function delete():void{
-            $st = $this->pdo->prepare("DELETE FROM users WHERE login = :login LIMIT 1");
-            $st->bindValue(":login",$this->login,PDO::PARAM_STR);
+            $st = $this->pdo->prepare("DELETE FROM users WHERE id = :id LIMIT 1");
+            $st->bindValue(":id",$this->id,\PDO::PARAM_STR);
             $st->execute();
-//            $st = $this->pdo-> prepare("DELETE FROM users_aritcles WHERE user = :id");
-//            $st->bindValue(":id", $this->$id,PDO::PARAM_INT);
-//            $st->execute();
+            $st = $this->pdo-> prepare("DELETE FROM users_article WHERE user = :id");
+            $st->bindValue(":id", $this->id,\PDO::PARAM_INT);
+            $st->execute();
         }
+        
         public function getAuthData($login): ?array {
-        $sql = "SELECT pass FROM users WHERE login = :login";
+        $sql = "SELECT password,active FROM users WHERE login = :login";
         $st = $this->pdo->prepare($sql);
         $st->bindValue(":login", $login, \PDO::PARAM_STR);
         $st->execute();
-        return $st->fetch(); // Возвращаем только данные для пароля
+        return $st->fetch(); 
     }
 
         public function checkAuthData($login, $password): bool {
-        $sql = "SELECT pass FROM users WHERE login = :login";
+        $sql = "SELECT password FROM users WHERE login = :login";
         $st = $this->pdo->prepare($sql);
         $st->bindValue(":login", $login, \PDO::PARAM_STR);
         $st->execute();
         $authData = $st->fetch();
-
-        // Проверяем, совпадает ли пароль
         if ($authData && password_verify($password, $authData['pass'])) {
             return true;
         } else {

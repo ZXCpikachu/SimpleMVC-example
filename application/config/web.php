@@ -42,11 +42,12 @@ $config = [
             'class' => \application\models\Subcategory::class
         ],
         
-        'homepageNumArticles' => 5,
-        'homepageNumSubcategories' => 5,
-        'homepageNumArticlesPerSubcategory' =>5,
+        'homepageNumArticles' => 25,
+        'homepageNumSubcategories' => 25,
+        'homepageNumArticlesPerSubcategory' =>25,
         'admin' => [
             'username' => 'admin', // Укажите имя пользователя администратора
+            'password' => 1234,
         ]
     ]    
 ];

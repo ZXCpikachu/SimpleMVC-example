@@ -13,7 +13,7 @@ class Category extends \ItForFree\SimpleMVC\MVC\Model
     public  $name = null;
     public  $description = null;
     public string $orderBy = 'name ASC';
-    public function storeFormValues ($param){
+    public function storeFormValues ($params){
          $this->__construct( $params );
     }
    public function getById(int $id, string $tableName = ''): ?Model
@@ -52,27 +52,34 @@ class Category extends \ItForFree\SimpleMVC\MVC\Model
             "totalRows" => $totalRows['totalRows']
         ];
     }
-    public function insert($tableName = ''){
-        $tableName = !empty($tableName) ? $tableName : $this->tableName;
-        $sql = "INSERT INTO $tableName (name,description) VALUES (:name,:description)";
+    public function insert(){
+        $sql = "INSERT INTO $this->tableName (name,description) VALUES (:name,:description)";
         $st= $this->pdo->prepare($sql);
         $st->bindValue(":name", $this->name, \PDO::PARAM_STR);
         $st->bindValue(":description",$this->description, \PDO::PARAM_STR);
         $st->execute();
         $this->id = $this->pdo->lastInsertId();
     }
-    public function update($tableName = ''){
-        $tableName = !empty($tableName) ? $tableName : $this->tableName;
-        $sql = "UPDATE $tableName SET name = :name, description=:description WHERE id = :id";
-        $st = $this->pdo->prepare($sql);
-        $st->bindValue(":name", $this->name, \PDO::PARAM_STR);
-        $st->bindValue(":description", $this->description, \PDO::PARAM_STR);
-        $st->bindValue(":id", $this->id, \PDO::PARAM_INT);
-        $st->execute();
+    public function update($category) {
+    $sql = "UPDATE $this->tableName SET name = :name, description = :description WHERE id = :id";
+    $st = $this->pdo->prepare($sql);
+
+    // Связываем параметры
+    $st->bindValue(":name", $category->name, \PDO::PARAM_STR);
+    $st->bindValue(":description", $category->description, \PDO::PARAM_STR);
+    $st->bindValue(":id", $category->id, \PDO::PARAM_INT);
+
+    // Отладка запроса перед выполнением
+    if ($st->execute()) {
+        echo "Запрос успешно выполнен.";
+    } else {
+        echo "Ошибка выполнения запроса:";
+        print_r($st->errorInfo());
     }
-    public function delete($tableName = ''):void{
-        $tableName = !empty($tableName) ? $tableName : $this->tableName;
-        $st = $this->pdo->prepare("DELETE FROM $tableName WHERE id = :id LIMIT 1");
+}
+
+    public function delete():void{
+        $st = $this->pdo->prepare("DELETE FROM $this->tableName WHERE id = :id LIMIT 1");
         $st->bindValue(":id", $this->id, \PDO::PARAM_INT);
         $st->execute();
     }
